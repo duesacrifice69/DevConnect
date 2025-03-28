@@ -7,6 +7,131 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <style>
+        
+
+
+/* -------------------------------------- Tutorial page ---------------------------------------------- Geenod 25/03/27 ---------*/
+
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 275px; /* Position of main content */
+    background-color: #09122C; /* Main content background */
+    color: white; /* Text color */
+}
+
+/* Right Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh; /* Full height */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #872341; /* Sidebar background */
+    color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar links */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 10px 0; /* Adds spacing between menu items */
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center; 
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    background-color: #872341;
+    border-radius: 5px;
+    transition: background 0.3s;
+    font-size: 18px; 
+}
+
+.sidebar ul li a:hover {
+    background-color: #c0a1aa; /* Slightly lighter hover effect */          /* Use this hover effect and color to other menus also  */         
+}
+
+/* Sidebar icons */
+.sidebar ul li a img {
+    width: 24px; 
+    height: 24px;
+    margin-right: 12px; 
+    vertical-align: middle; 
+}
+
+/* Sidebar title */
+.sidebar h1 img {
+    width: 50px; 
+    height: 50px;
+    margin-right: 12px; 
+    vertical-align: middle; 
+}
+
+.sidebar h1 {
+    display: flex;
+    align-items: center; 
+    position: sticky;
+    text-decoration: none;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 29px; 
+}
+
+/* Navigation Label */
+#Navigation {
+    font-size: 12px;
+    color: white;
+}
+
+.sidebar-bottom {
+    position: absolute;
+    bottom: 50px;
+    left: 20px;
+    width: calc(100% - 40px);
+}
+
+.account-btn {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    background-color: #872341;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+    font-size: 18px;
+}
+
+.account-btn:hover {
+    background-color: #c0a1aa;                  /* Use this hover effect and color to other menus also  */  
+}
+
+.account-btn img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+/* -------------------------------------- Tutorial page end  -------------------------------------- Geenod 25/03/27 -------------- */
+    </style>
     <div class="left-section"></div>
     <div class="sidebar">
         <h2>DevConnect 🚀</h2>
