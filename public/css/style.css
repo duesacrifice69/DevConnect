@@ -1,0 +1,298 @@
+:root {
+    --primary: linear-gradient(45deg, #060c1f, #0b1636);
+    --secondary: #BE3144;
+    --secondary-dark: #872341;
+    /* --secondary: linear-gradient(45deg, #BE3144, #D94F6D);
+        --secondary-dark: linear-gradient(45deg, #872341, #A52B4D); */
+    --accent: #d9d9d91a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background 0.3s;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--primary);
+    min-height: 100vh;
+    color: white;
+    --sidebar-width: 250px;
+    /* Width of the sidebar */
+
+}
+
+.button {
+    background: var(--secondary);
+    color: white;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 18px;
+    border: none;
+}
+
+.button:hover {
+    background: var(--secondary-dark);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Main Content */
+.main-content {
+    padding: 20px;
+    margin-left: var(--sidebar-width);
+}
+
+/* Right Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    /* Full height */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(45deg, var(--secondary-dark), var(--secondary));
+    color: white;
+    --sidebar-padding: 20px;
+    padding: var(--sidebar-padding);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar links */
+.sidebar ul {
+    list-style: none;
+}
+
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.sidebar a:hover {
+    background-color: var(--accent);
+    text-decoration: none;
+}
+
+/* Sidebar icons */
+.sidebar a img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+/* Sidebar title */
+.sidebar h1 img {
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+.sidebar h1 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 29px;
+}
+
+.sidebar-bottom {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - var(--sidebar-padding) * 2);
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+header>div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+header .profile img {
+    width: 40px;
+    height: 40px;
+}
+
+header .profile h1 {
+    font-size: 24px;
+}
+
+header .notification {
+    cursor: pointer;
+}
+
+header .logout-btn img {
+    width: 30px;
+    vertical-align: middle;
+}
+
+
+/* Welcome */
+.welcome-container,
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.welcome-container h1 {
+    font-size: 72px;
+}
+
+.welcome-container h3 {
+    font-size: 28px;
+    margin-bottom: -12px;
+}
+
+.welcome-container .auth-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 48px;
+}
+
+
+/* Auth */
+
+.auth-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1;
+}
+
+.auth-back img {
+    width: 30px;
+}
+
+form {
+    width: 400px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: var(--accent);
+}
+
+label {
+    display: block;
+    margin-left: 10px;
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+}
+
+input[type="submit"] {
+    width: 100%;
+    margin-top: 48px;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    color: red;
+}
+
+
+
+/* Forum */
+.all-tags a {
+    display: inline;
+    padding: 8px 12px;
+    margin: 0 2px;
+}
+
+.tag {
+    background: var(--secondary);
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin: 0 2px;
+}
+
+.post {
+    position: relative;
+    background: var(--accent);
+    border-radius: 20px;
+    --post-padding: 20px;
+    padding: var(--post-padding);
+    margin: 20px 0;
+    cursor: pointer;
+}
+
+.post h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.post img {
+    width: 150px;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 10px;
+    background: white;
+}
+
+.post .tags {
+    position: absolute;
+    bottom: var(--post-padding);
+    right: var(--post-padding);
+}
+
+.post p {
+    font-size: 16px;
+    margin: 10px 20px;
+}
+
+
+/* Notes */
+.notes-list {
+    list-style: none;
+    margin: 20px 0;
+}
+
+.notes-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--accent);
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin: 10px 0;
+}
+
+.notes-list li img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
