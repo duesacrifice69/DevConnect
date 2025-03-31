@@ -220,10 +220,6 @@ a:hover {
     text-decoration: underline;
 }
 
-.error {
-    color: red;
-}
-
 
 
 /* Forum */
@@ -295,4 +291,47 @@ a:hover {
     width: 30px;
     height: 30px;
     margin-right: 10px;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    opacity: 0;
+    right: 20px;
+    min-width: 250px;
+    padding: 1rem;
+    border-radius: 5px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+#toast-message {
+    flex-grow: 1;
+}
+
+#toast-close {
+    color: white;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
+#toast-close:hover {
+    background: var(--secondary-dark);
+}
+.toast.error {
+    background: var(--secondary);
+}
+
+.toast.success {
+    background: rgb(0, 199, 43);
 }

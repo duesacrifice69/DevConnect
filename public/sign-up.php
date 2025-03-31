@@ -69,10 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </p>
         </form>
     </div>
+    <?php include "../includes/toast.php"; ?>
 
     <script>
-        const error = document.querySelector(".error");
-
         function validateForm(form) {
             const email = form["email"].value.trim();
             const username = form["username"].value.trim();
@@ -80,16 +79,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const retype_password = form["retype_password"].value.trim();
 
             if (username.length < 6) {
-                error.textContent = "Username must be at least 6 characters long";
+                showToast("Username must be at least 6 characters long","error");
                 return false;
             } else if (password.length < 8) {
-                error.textContent = "Password must be at least 8 characters long";
+                showToast("Password must be at least 8 characters long","error");
                 return false;
             } else if (password !== retype_password) {
-                error.textContent = "Passwords do not match";
+                showToast("Passwords do not match","error");
                 return false;
             } else {
-                error.textContent = "";
                 return true;
             }
         };

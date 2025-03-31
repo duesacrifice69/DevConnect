@@ -20,9 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $redirect_to = isset($_SESSION["redirect_to"]) ? $_SESSION["redirect_to"] : "dashboard.php";
             unset($_SESSION["redirect_to"]);
             header("Location: $redirect_to");
+            $message = "Welcome back, " . htmlspecialchars($user['username']) . "!";
+            $type = "success";
             exit();
         } else {
-            $error = "Invalid username or password";
+            $message = "Invalid username or password";
+            $type = "error";
         }
     } catch (PDOException $e) {
         $error = "Database error: " . $e->getMessage();
@@ -52,14 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" id="password" name="password" required>
 
             <input type="submit" class="button" value="Sign In">
-
-            <p class="error">
-                <?php if (isset($error)): ?>
-                    <?php echo $error; ?>
-                <?php endif; ?>
-            </p>
         </form>
     </div>
+    <?php include "../includes/toast.php"; ?>
 </body>
 
 </html>

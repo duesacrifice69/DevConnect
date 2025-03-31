@@ -55,9 +55,8 @@ require "../auth-check.php";
       </div>
     </div>
 
-
   </div>
-
+  <?php include "../includes/toast.php"; ?>
 </body>
 
 </html>
