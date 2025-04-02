@@ -27,23 +27,27 @@ require "../auth-check.php";
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
             /* Soft shadow */
             display: flex;
-            align-items: center;
+            align-items: top;
             justify-content: top;
             text-align: top;
+
+
         }
     </style>
 </head>
 
 <body>
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include "../includes/sidebar.php"; ?>
     <div class="main-content">
         <?php include "../includes/header.php"; ?>
-        <section class="content">
-            <p>Approve Posts</p>
-            <div class="white-box">
+        <div class="white-box">
+            <ul>
+                <li>name :</li>
+                <li>E mail :</li>
+            </ul>
 
-            </div>
-        </section>
+        </div>
+
     </div>
 </body>
 
