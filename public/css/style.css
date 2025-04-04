@@ -131,13 +131,34 @@ header .profile h1 {
     font-size: 24px;
 }
 
-header .notification {
+header .admin-toggle-btn {
+    background: none;
     cursor: pointer;
+    border: 1px solid white;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+header .notification-btn {
+    padding: 5px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+header .logout-btn {
+    padding: 5px;
+    border-radius: 50%;
 }
 
 header .logout-btn img {
-    width: 30px;
+    width: 25px;
     vertical-align: middle;
+}
+
+header .hover-accent:hover {
+    background: var(--accent);
+    cursor: pointer;
 }
 
 

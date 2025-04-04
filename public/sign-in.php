@@ -11,12 +11,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     try {
-        $stmt = $db->prepare("SELECT username, password FROM users WHERE username = ?");
+        $stmt = $db->prepare("SELECT username, role, email, password FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            
+            if ($user['role'] == 'admin') {
+                $_SESSION['admin_mode'] = false;
+            }
             $redirect_to = isset($_SESSION["redirect_to"]) ? $_SESSION["redirect_to"] : "dashboard.php";
             unset($_SESSION["redirect_to"]);
             header("Location: $redirect_to");
