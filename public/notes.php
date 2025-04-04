@@ -1,5 +1,10 @@
 <?php
-require "../auth-check.php";
+session_start();
+if (!isset($_SESSION["username"])) {
+  $_SESSION["redirect_to"] = "notes.php";
+  header("Location: ./");
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -19,32 +24,32 @@ require "../auth-check.php";
     <?php include "../includes/header.php"; ?>
     <h1>Lecture Notes</h1>
 
-  <ul class="notes-list">
-    <li class="note">
-      Note1.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-    <li class="note">
-      Note2.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-    <li class="note">
-      Note3.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-    <li class="note">
-      Note4.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-    <li class="note">
-      Note5.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-    <li class="note">
-      Note6.pdf
-      <a href=""><img src="assets/images/download.svg" alt="download"></a>
-    </li>
-  </ul>
+    <ul class="notes-list">
+      <li class="note">
+        Note1.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+      <li class="note">
+        Note2.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+      <li class="note">
+        Note3.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+      <li class="note">
+        Note4.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+      <li class="note">
+        Note5.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+      <li class="note">
+        Note6.pdf
+        <a href=""><img src="assets/images/download.svg" alt="download"></a>
+      </li>
+    </ul>
   </div>
 
 </body>

@@ -1,5 +1,10 @@
 <?php
-require "../auth-check.php";
+session_start();
+if (!isset($_SESSION["username"])) {
+    $_SESSION["redirect_to"] = "profile.php";
+    header("Location: ./");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
