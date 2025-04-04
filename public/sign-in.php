@@ -24,16 +24,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $redirect_to = isset($_SESSION["redirect_to"]) ? $_SESSION["redirect_to"] : "dashboard.php";
             unset($_SESSION["redirect_to"]);
-            header("Location: $redirect_to");
-            $message = "Welcome back, " . htmlspecialchars($user['username']) . "!";
-            $type = "success";
+            header("Location: $redirect_to");            
             exit();
         } else {
-            $message = "Invalid username or password";
-            $type = "error";
+            $toast = ['type' => 'error', 'message' => 'Invalid username or password.'];
         }
     } catch (PDOException $e) {
-        $error = "Database error: " . $e->getMessage();
+        $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
     }
 }
 ?>
@@ -50,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <a href="index.php" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
+    <a href="./" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
     <div class="auth-container">
         <form name="signin" method="post">
             <label for="username">Username:</label>

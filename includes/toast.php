@@ -26,7 +26,7 @@
             toast.style.display = 'none';
         }, 500);
     }
-    <?php if (isset($message)): ?>
-        showToast("<?php echo $message; ?>", "<?php echo $type; ?>");
+    <?php if (isset($toast)): ?>
+        showToast("<?php echo $toast["message"]; ?>", "<?php echo $toast["type"]; ?>");
     <?php endif; ?>
 </script>

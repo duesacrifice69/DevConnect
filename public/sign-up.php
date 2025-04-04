@@ -16,9 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result["email_count"] > 0) {
-            $error = "Email already registered.";
+            $toast = ['type' => 'error', 'message' => 'Email already taken.'];
         } else if ($result["username_count"] > 0) {
-            $error = "Username already taken.";
+            $toast = ['type' => 'error', 'message' => 'Username already taken.'];
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
     } catch (PDOException $e) {
-        $error = "Database error: " . $e->getMessage();
+        $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
     }
 }
 ?>
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <a href="index.php" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
+    <a href="./" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
     <div class="auth-container">
         <form method="post" onsubmit="return validateForm(this);">
             <label for="email">Email:</label>
