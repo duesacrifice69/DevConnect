@@ -4,9 +4,10 @@ if (isset($_SESSION["username"])) {
     header("Location: dashboard.php");
     exit();
 }
-require_once "../db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once "../db.php";
+    
     $username = $_POST['username'];
     $password = $_POST['password'];
 
