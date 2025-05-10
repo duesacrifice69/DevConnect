@@ -7,7 +7,7 @@ if (isset($_SESSION["username"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once "../db.php";
-    
+
     $email = $_POST['email'];
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | DevConnect</title>
     <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -80,13 +80,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const retype_password = form["retype_password"].value.trim();
 
             if (username.length < 6) {
-                showToast("Username must be at least 6 characters long","error");
+                showToast("Username must be at least 6 characters long", "error");
                 return false;
             } else if (password.length < 8) {
-                showToast("Password must be at least 8 characters long","error");
+                showToast("Password must be at least 8 characters long", "error");
                 return false;
             } else if (password !== retype_password) {
-                showToast("Passwords do not match","error");
+                showToast("Passwords do not match", "error");
                 return false;
             } else {
                 return true;

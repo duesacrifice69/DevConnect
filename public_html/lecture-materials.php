@@ -109,7 +109,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lecture Materials | DevConnect</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
 </head>
 
@@ -132,7 +132,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
           <?php if ($adminModeEnabled): ?>
             <div onclick="handleRemoveLectureMaterial('<?php echo $lecture_material['file_name']; ?>')">Remove</div>
           <?php else: ?>
-            <a href="<?php echo "assets/uploads/lecture-materials/" . htmlspecialchars($lecture_material['file_name']); ?>"><img src="assets/images/download.svg" alt="download"></a>
+            <a href="<?php echo "uploads.php?path=lecture-materials/" . urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
@@ -156,7 +156,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       </form>
     </div>
 
-    <script src="js/popup.js"></script>
+    <script src="assets/js/popup.js"></script>
     <script>
       function handleRemoveLectureMaterial(file_name) {
         showConfirm("Are you sure you want to remove this lecture material?", (success) => {

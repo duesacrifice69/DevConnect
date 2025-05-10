@@ -87,7 +87,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutorials | DevConnect</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
 </head>
 
@@ -144,7 +144,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             </form>
         </div>
 
-        <script src="js/popup.js"></script>
+        <script src="assets/js/popup.js"></script>
         <script>
             function handleRemoveVideo(videoId) {
                 showConfirm("Are you sure you want to remove this video?", (success) => {

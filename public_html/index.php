@@ -13,7 +13,7 @@ if (isset($_SESSION["username"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome | DevConnect</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
 </head>
 

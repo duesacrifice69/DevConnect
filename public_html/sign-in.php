@@ -7,7 +7,7 @@ if (isset($_SESSION["username"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once "../db.php";
-    
+
     $username = $_POST['username'];
     $password = $_POST['password'];
 
@@ -19,13 +19,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];
             $_SESSION['email'] = $user['email'];
-            
+
             if ($user['role'] == 'admin') {
                 $_SESSION['admin_mode'] = false;
             }
             $redirect_to = isset($_SESSION["redirect_to"]) ? $_SESSION["redirect_to"] : "dashboard.php";
             unset($_SESSION["redirect_to"]);
-            header("Location: $redirect_to");            
+            header("Location: $redirect_to");
             exit();
         } else {
             $toast = ['type' => 'error', 'message' => 'Invalid username or password.'];
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | DevConnect</title>
     <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
