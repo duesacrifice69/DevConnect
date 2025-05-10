@@ -3,7 +3,8 @@
     <ul>
         <li><a href="dashboard.php"><img src="assets/images/dashboard.svg">Dashboard</a></li>
         <li><a href="forum.php"><img src="assets/images/forumsalt.svg">Forum</a></li>
-        <li><a href="tutorials.php"><img src="assets/images/code.svg">Tutorials</a></li>
+        <li><a href="tutorials.php"><img src="assets/images/code.svg">Tutorials</a></li>        
+        <li><a href="lecture-materials.php"><img src="assets/images/school.svg">Lecture Materials</a></li>
     </ul>
 
     <div class="sidebar-bottom">
