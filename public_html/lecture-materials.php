@@ -132,7 +132,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
           <?php if ($adminModeEnabled): ?>
             <div onclick="handleRemoveLectureMaterial('<?php echo $lecture_material['file_name']; ?>')">Remove</div>
           <?php else: ?>
-            <a href="<?php echo "uploads.php?path=lecture-materials/" . urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
+            <a href="<?php echo "request-file.php?path=lecture-materials/" . urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
