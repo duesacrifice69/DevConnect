@@ -1,5 +1,5 @@
 :root {
-    --primary: linear-gradient(45deg, #060c1f, #0b1636);
+    --primary: linear-gradient(45deg, rgb(6, 12, 31), rgb(11, 22, 54));
     --secondary: #BE3144;
     --secondary-dark: #872341;
     --accent: #d9d9d926;
@@ -10,7 +10,6 @@
     padding: 0;
     box-sizing: border-box;
     transition: background 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    ;
 }
 
 body {
@@ -19,8 +18,10 @@ body {
     min-height: 100vh;
     color: white;
     --sidebar-width: 250px;
-    /* Width of the sidebar */
+}
 
+body:has(.main-content) {
+    padding-left: var(--sidebar-width);
 }
 
 .button {
@@ -41,7 +42,6 @@ body {
 /* Main Content */
 .main-content {
     padding: 20px;
-    margin-left: var(--sidebar-width);
 }
 
 /* Right Sidebar */
@@ -277,12 +277,12 @@ input[type="submit"] {
 
 
 /* Notes */
-.notes-list {
+.lecture_materials-list {
     list-style: none;
     margin: 20px 0;
 }
 
-.notes-list li {
+.lecture_materials-list li {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -292,10 +292,20 @@ input[type="submit"] {
     margin: 10px 0;
 }
 
-.notes-list li img {
+.lecture_materials-list li img {
     width: 30px;
     height: 30px;
     margin-right: 10px;
+}
+
+.lecture_materials-list li div {
+    color: var(--secondary);
+    padding-block: 8px;
+}
+
+.lecture_materials-list li div:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .white-box {
@@ -385,4 +395,75 @@ input[type="submit"] {
 
 .toast.success {
     background: #2E7D32;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup form {
+    position: relative;
+    background: var(--primary);
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s forwards;
+}
+
+.popup form h2 {
+    margin-bottom: 24px;
+}
+
+.popup .close-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease-in-out;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.popup .close-btn:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.popup .closed {
+    animation: slideOut 0.3s forwards;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
 }
