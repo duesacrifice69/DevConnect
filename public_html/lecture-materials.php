@@ -1,6 +1,6 @@
 <?php
 
-$upload_dir = "./assets/uploads/lecture-materials/";
+$upload_dir = "../uploads/lecture-materials/";
 $max_size_mb = 10;
 
 session_start();
