@@ -28,10 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: $redirect_to");
             exit();
         } else {
-            $toast = ['type' => 'error', 'message' => 'Invalid username or password.'];
+            throw new Exception('Invalid username or password.');
         }
-    } catch (PDOException $e) {
-        $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
+    } catch (Exception $e) {
+        $_SESSION['toast'] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
+        header("Location: sign-in.php");
+        exit();
     }
 }
 ?>

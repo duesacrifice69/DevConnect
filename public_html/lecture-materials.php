@@ -21,49 +21,44 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     } catch (PDOException $e) {
       $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
     }
-
-    if (isset($_SESSION["toast"])) {
-      $toast = $_SESSION["toast"];
-      unset($_SESSION["toast"]);
-    }
     break;
 
   // Add new lecture material
   case 'POST':
     try {
-      if (isset($_FILES['lecture_material'])) {
-        $file_name = $_FILES['lecture_material']['name'];
-        $file_tmp = $_FILES['lecture_material']['tmp_name'];
-        $file_size = $_FILES['lecture_material']['size'];
-        $file_error = $_FILES['lecture_material']['error'];
+      $file_error = $_FILES['lecture_material']['error'];
 
-        if (file_exists($upload_dir . $file_name)) {
-          $file_name = pathinfo($file_name, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($file_name, PATHINFO_EXTENSION);
-        }
-
-        if ($file_size > $max_size_mb * 1024 * 1024) {
-          throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
-        }
-
-        if ($file_error !== 0) {
-          throw new Exception("There was a problem uploading your file.");
-        }
-
-        $file_destination = $upload_dir . $file_name;
-
-        if (move_uploaded_file($file_tmp, $file_destination)) {
-          $stmt = $db->prepare("INSERT INTO lecture_materials (file_name) VALUES (?)");
-          $success = $stmt->execute([$file_name]);
-          if (!$success) {
-            throw new Exception("Failed to add lecture material.");
-          }
-          $_SESSION["toast"] = ['type' => 'success', 'message' => 'Lecture Material uploaded successfully.'];
-        } else {
-          throw new Exception("Failed to move uploaded file.");
-        }
-      } else {
+      if ($file_error === UPLOAD_ERR_NO_FILE) {
         throw new Exception("No file uploaded.");
       }
+
+      $file_name = $_FILES['lecture_material']['name'];
+      $file_tmp = $_FILES['lecture_material']['tmp_name'];
+      $file_size = $_FILES['lecture_material']['size'];
+
+      if (file_exists($upload_dir . $file_name)) {
+        $file_name = pathinfo($file_name, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($file_name, PATHINFO_EXTENSION);
+      }
+
+      if ($file_size > $max_size_mb * 1024 * 1024) {
+        throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
+      }
+
+      if ($file_error !== UPLOAD_ERR_OK) {
+        throw new Exception("There was a problem uploading your file.");
+      }
+
+      $file_destination = $upload_dir . $file_name;
+
+      if (!move_uploaded_file($file_tmp, $file_destination)) {
+        throw new Exception("Failed to move uploaded file.");
+      }
+      $stmt = $db->prepare("INSERT INTO lecture_materials (file_name) VALUES (?)");
+      $success = $stmt->execute([$file_name]);
+      if (!$success) {
+        throw new Exception("Failed to add lecture material.");
+      }
+      $_SESSION["toast"] = ['type' => 'success', 'message' => 'Lecture Material uploaded successfully.'];
     } catch (Exception $e) {
       $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
       http_response_code(500);
@@ -90,9 +85,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       }
       $_SESSION["toast"] = ['type' => 'success', 'message' => 'Lecture material removed successfully.'];
       http_response_code(200);
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
       $_SESSION["toast"] = ['type' => 'error', 'message' => "Error: " . $e->getMessage()];
       http_response_code(500);
+    } finally {
+      exit();
     }
     break;
 
@@ -132,7 +129,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
           <?php if ($adminModeEnabled): ?>
             <div onclick="handleRemoveLectureMaterial('<?php echo $lecture_material['file_name']; ?>')">Remove</div>
           <?php else: ?>
-            <a href="<?php echo "request-file.php?path=lecture-materials/" . urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
+            <a href="request-file.php?path=lecture-materials/<?php echo urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>

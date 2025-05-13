@@ -1,3 +1,10 @@
+<?php
+if (isset($_SESSION["toast"])) {
+    $toast = $_SESSION["toast"];
+    unset($_SESSION["toast"]);
+}
+?>
+
 <div id="toast" class="toast">
     <span id="toast-message"></span>
     <button id="toast-close" onclick="hideToast()">×</button>

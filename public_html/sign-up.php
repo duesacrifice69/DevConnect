@@ -17,9 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result["email_count"] > 0) {
-            $toast = ['type' => 'error', 'message' => 'Email already taken.'];
+            throw new Exception('Email already taken.');
         } else if ($result["username_count"] > 0) {
-            $toast = ['type' => 'error', 'message' => 'Username already taken.'];
+            throw new Exception('Username already taken.');
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -28,8 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: sign-in.php");
             exit();
         }
-    } catch (PDOException $e) {
-        $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
+    } catch (Exception $e) {
+        $_SESSION['toast'] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
+        header("Location: sign-up.php");
+        exit();
     }
 }
 ?>
@@ -62,12 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" id="retype_password" name="retype_password" required>
 
             <input type="submit" class="button" value="Register">
-
-            <p class="error">
-                <?php if (isset($error)): ?>
-                    <?php echo $error; ?>
-                <?php endif; ?>
-            </p>
         </form>
     </div>
     <?php include "../includes/toast.php"; ?>

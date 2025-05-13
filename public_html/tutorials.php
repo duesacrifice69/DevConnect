@@ -27,11 +27,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         } catch (PDOException $e) {
             $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
         }
-
-        if (isset($_SESSION["toast"])) {
-            $toast = $_SESSION["toast"];
-            unset($_SESSION["toast"]);
-        }
         break;
 
     // Add new tutorial
@@ -71,6 +66,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         } catch (PDOException $e) {
             $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
             http_response_code(500);
+        } finally {
+            exit();
         }
         break;
 
