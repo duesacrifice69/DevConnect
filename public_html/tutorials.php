@@ -50,10 +50,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
 
     // Remove tutorial
-    case 'DELETE':
-        $rawData = file_get_contents("php://input");
-        parse_str($rawData, $queryParams);
-        $id = $queryParams['id'];
+    case 'DELETE':    
+        $id = $_GET['id'];
 
         try {
             $stmt = $db->prepare("DELETE FROM tutorials WHERE id = ?");
@@ -146,12 +144,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             function handleRemoveVideo(videoId) {
                 showConfirm("Are you sure you want to remove this video?", (success) => {
                     if (success) {
-                        fetch("tutorials.php", {
+                        fetch("tutorials.php?id=" + videoId, {
                             method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `id=${videoId}`,
                         }).then(() => location.reload());
                     }
                 });

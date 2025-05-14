@@ -71,10 +71,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
   // Remove lecture material
   case 'DELETE':
-    $rawData = file_get_contents("php://input");
-    parse_str($rawData, $queryParams);
-
-    $file_name = $queryParams['file_name'];
+    $file_name = $_GET['file_name'];
     try {
       $file_path = $upload_dir . $file_name;
       unlink($file_path);
@@ -158,12 +155,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       function handleRemoveLectureMaterial(file_name) {
         showConfirm("Are you sure you want to remove this lecture material?", (success) => {
           if (success) {
-            fetch("lecture-materials.php", {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: `file_name=${file_name}`,
+            fetch("lecture-materials.php?file_name=" + file_name, {
+              method: 'DELETE'
             }).then(() => location.reload());
           }
         })
