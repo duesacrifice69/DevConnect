@@ -10,7 +10,7 @@ if (empty($path)) {
 
 session_start();
 if (!isset($_SESSION["username"])) {
-    $_SESSION["redirect_to"] = "request-file.php?path=" . urlencode($path);
+    $_SESSION["redirect_to"] = "resource.php?path=" . urlencode($path);
     header("Location: ./");
     exit();
 }
