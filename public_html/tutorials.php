@@ -31,17 +31,22 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
     // Add new tutorial
     case 'POST':
-        $url = $_POST['url'];
-        $category = $_POST['category'];
-
         try {
+            if (!isset($_SESSION["admin_mode"]) || $_SESSION["admin_mode"] === false) {
+                throw new Exception("You do not have permission to perform this action.");
+            }
+            $url = $_POST['url'];
+            $category = $_POST['category'];
+            if (empty($url) || empty($category)) {
+                throw new Exception("Please fill in all required fields.");
+            }
             $stmt = $db->prepare("INSERT INTO tutorials (url, category) VALUES (?, ?)");
             $success = $stmt->execute([$url, $category]);
             if (!$success) {
                 throw new Exception("Failed to add tutorial.");
             }
             $_SESSION["toast"] = ['type' => 'success', 'message' => 'Tutorial added successfully.'];
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $_SESSION["toast"]  = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
         } finally {
             header("Location: tutorials.php");
@@ -50,10 +55,15 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
 
     // Remove tutorial
-    case 'DELETE':    
-        $id = $_GET['id'];
-
+    case 'DELETE':
         try {
+            if (!isset($_SESSION["admin_mode"]) || $_SESSION["admin_mode"] === false) {
+                throw new Exception("You do not have permission to perform this action.");
+            }
+            $id = $_GET['id'];
+            if (empty($id)) {
+                throw new Exception("Invalid parameters.");
+            }
             $stmt = $db->prepare("DELETE FROM tutorials WHERE id = ?");
             $success = $stmt->execute([$id]);
             if (!$success) {
@@ -61,7 +71,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             }
             $_SESSION["toast"] = ['type' => 'success', 'message' => 'Tutorial removed successfully.'];
             http_response_code(200);
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
             http_response_code(500);
         } finally {

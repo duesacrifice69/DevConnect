@@ -26,8 +26,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
   // Add new lecture material
   case 'POST':
     try {
-      $file_error = $_FILES['lecture_material']['error'];
+      if (!isset($_SESSION["admin_mode"]) || $_SESSION["admin_mode"] === false) {
+        throw new Exception("You do not have permission to perform this action.");
+      }
 
+      $file_error = $_FILES['lecture_material']['error'];
       if ($file_error === UPLOAD_ERR_NO_FILE) {
         throw new Exception("No file uploaded.");
       }
@@ -71,8 +74,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
   // Remove lecture material
   case 'DELETE':
-    $file_name = $_GET['file_name'];
     try {
+      if (!isset($_SESSION["admin_mode"]) || $_SESSION["admin_mode"] === false) {
+        throw new Exception("You do not have permission to perform this action.");
+      }
+      $file_name = $_GET['file_name'];
+      if (empty($file_name)) {
+        throw new Exception("Invalid parameters.");
+      }
       $file_path = $upload_dir . $file_name;
       unlink($file_path);
       $stmt = $db->prepare("DELETE FROM lecture_materials WHERE file_name = ?");
