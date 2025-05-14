@@ -18,16 +18,16 @@ function showConfirm(text, callback) {
 
   popup.querySelector("#confirm").addEventListener("click", () => {
     popup.children[0].classList.add("closed");
-    scrollLock(false);
     setTimeout(() => {
+      scrollLock(false);
       document.body.removeChild(popup);
     }, 200);
     callback(true);
   });
   popup.querySelector("#cancel").addEventListener("click", () => {
     popup.children[0].classList.add("closed");
-    scrollLock(false);
     setTimeout(() => {
+      scrollLock(false);
       document.body.removeChild(popup);
     }, 200);
     callback(false);
@@ -55,8 +55,8 @@ function handleOpenPopup() {
 
 function handleClosePopup() {
   document.querySelector(".popup>form").classList.add("closed");
-  scrollLock(false);
   setTimeout(() => {
+    scrollLock(false);
     document.querySelector(".popup").style.display = "none";
   }, 200);
 }
