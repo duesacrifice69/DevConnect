@@ -574,6 +574,29 @@ button.more:focus .menu {
 
 }
 
+/* Image Uploader */
+.image-uploader {
+    position: relative;
+}
+
+.image-uploader img {
+    width: 100%;
+    border-radius: 20px;
+    display: block;
+    margin: 10px auto;
+    cursor: pointer;
+}
+
+.image-uploader input {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+
 /* Scroll Bar */
 ::-webkit-scrollbar {
     width: 8px;
