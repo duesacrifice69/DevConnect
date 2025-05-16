@@ -13,6 +13,25 @@ require_once "../../db.php";
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
+    $edit_post_id = isset($_GET['edit']) ? $_GET['edit'] : null;
+    if (!empty($edit_post_id)) {
+      try {
+        $stmt = $db->prepare("SELECT id, title, description, tags, image_path, author_id FROM posts WHERE id = ?");
+        $stmt->execute([$edit_post_id]);
+        $edit_post = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$edit_post) {
+          throw new Exception("Post not found.");
+        }
+        if ($edit_post["author_id"] != $_SESSION["user_id"]) {
+          throw new Exception("You do not have permission to edit this post.");
+        }
+      } catch (Exception $e) {
+        $_SESSION["toast"] = ['type' => 'error', 'message' => "Error: " . $e->getMessage()];
+        header("Location: ./");
+        exit();
+      }
+    }
+
     $tag = isset($_GET['tag']) ? $_GET['tag'] : null;
     $posts = [];
     $tags = [];
@@ -62,8 +81,73 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     }
     break;
 
-  // Add new forum post
+  // Add or Edit forum post
   case 'POST':
+    try {
+      $id = $_POST['id'];
+      $title = $_POST['title'];
+      $description = $_POST['description'];
+      $tags = $_POST['tags'];
+      $image = $_FILES['image'];
+      $image_missing = $image['error'] == UPLOAD_ERR_NO_FILE;
+
+      if (!empty($id)) {
+        $stmt = $db->prepare("SELECT image_path, author_id FROM posts WHERE id = ?");
+        $stmt->execute([$id]);
+        $_post = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$_post) {
+          throw new Exception("Post not found.");
+        }
+        if ($_post["author_id"] != $_SESSION["user_id"]) {
+          throw new Exception("You do not have permission to edit this post.");
+        }
+      }
+
+      if (empty($title) || empty($description) || ($image_missing && empty($id))) {
+        throw new Exception("Please fill in required fields.");
+      }
+      if (!$image_missing) {
+        $file_name = uniqid() . "_" . basename($image['name']);
+
+        if ($image['size'] > $max_size_mb * 1024 * 1024) {
+          throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
+        }
+
+        if ($image['error'] !== UPLOAD_ERR_OK) {
+          throw new Exception("There was a problem uploading your image.");
+        }
+
+        $file_destination = $upload_dir . "posts/" . $file_name;
+
+        if (!move_uploaded_file($image['tmp_name'], $file_destination)) {
+          throw new Exception("Failed to move uploaded image.");
+        }
+        unlink($upload_dir . $_post["image_path"]);
+      }
+
+      $query = $id ? "UPDATE posts SET title = ?, description = ?, tags = ?, image_path= ? WHERE id = ?" : "INSERT INTO posts (title, description, tags, image_path, author_id) VALUES (?,?, ?, ?, ?)";
+      $stmt = $db->prepare($query);
+      $success = $stmt->execute([
+        $title,
+        $description,
+        $tags,
+        $image_missing ? $_post["image_path"] : "posts/" . $file_name,
+        $id ? $id : $_SESSION["user_id"]
+      ]);
+      if (!$success) {
+        throw new Exception("Failed to " . ($id ? "edit" : "create") . " post.");
+      }
+      $_SESSION["toast"] = ['type' => 'success', 'message' => 'Post ' . ($id ? "edited" : "created") . ' successfully.'];
+    } catch (Exception $e) {
+      $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
+      http_response_code(500);
+    } finally {
+      header("Location: ./");
+      exit();
+    }
+
+    break;
+
     try {
       $title = $_POST['title'];
       $description = $_POST['description'];
@@ -104,7 +188,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
       http_response_code(500);
     } finally {
-      header("Location: ../forum");
+      header("Location: ./");
       exit();
     }
 
@@ -165,7 +249,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
   <link rel="icon" href="assets/images/rocket.svg" type="image/x-icon">
 </head>
 
-<body>
+<body <?php if (isset($edit_post)): ?> onload="handleOpenPopup()" <?php endif; ?>>
   <?php include "../../includes/sidebar.php"; ?>
   <div class="main-content">
     <?php include "../../includes/header.php"; ?>
@@ -191,7 +275,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             <?php echo htmlspecialchars($post["title"]) ?>
           </a></h2>
         <div style="display: flex; align-items: flex-start;">
-          <img class="image" alt="image" src="resource.php?path=<?php echo htmlspecialchars($post["image_path"]) ?>" />
+          <img class="image" alt="image" src="resource.php?path=<?php echo $post["image_path"] ?>" />
           <div>
             <p class="description"><?php echo htmlspecialchars($post["description"]) ?></p>
             <?php if (!empty($post["tags"])): ?>
@@ -211,26 +295,43 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
   <div class="popup">
     <form action="forum/index.php" method="POST" enctype="multipart/form-data" style="width: 600px;">
-      <h2>Create a Post</h2>
-      <div class="close-btn" onclick="handleClosePopup()">
+      <h2>
+        <?php echo isset($edit_post) ? "Edit" : "Create a"; ?>
+        Post</h2>
+      <div class="close-btn" onclick="handleClosePostPopup()">
         X
       </div>
+      <?php if (isset($edit_post)): ?>
+        <input type="hidden" name="id" value="<?php echo htmlspecialchars($edit_post["id"]) ?>">
+      <?php endif; ?>
+
       <label for="title">Title:</label>
-      <input type="text" id="title" name="title" required maxlength="255">
+      <input type="text" id="title" name="title" required maxlength="255" value="<?php echo isset($edit_post) ? htmlspecialchars($edit_post["title"]) : ''; ?>">
 
       <label for="description">Description:</label>
-      <textarea name="description" id="description" rows="8" required></textarea>
+      <textarea name="description" id="description" rows="20" required><?php echo isset($edit_post) ? htmlspecialchars($edit_post["description"]) : ''; ?></textarea>
 
       <label for="tags">Tags:</label>
-      <input type="text" id="tags" name="tags" placeholder="Python, HTML, CSS,..." maxlength="100">
+      <input type="text" id="tags" name="tags" placeholder="Python, HTML, CSS,..." maxlength="100" value="<?php echo isset($edit_post) ? htmlspecialchars($edit_post["tags"]) : ''; ?>">
 
-      <label for="url">Image:</label>
-      <input type="file" id="image" name="image" accept="image/*" required>
+      <label for="image">Image:</label>
+      <div class="image-uploader" data-id="image" data-name="image" data-required="<?php echo isset($edit_post) ? "false" : "true" ?>" data-src="<?php echo isset($edit_post) ? "resource.php?path=" . $edit_post["image_path"] : null; ?>"></div>
 
-      <input type="submit" class="button" value="Post">
+      <input type="submit" class="button" value="<?php echo isset($edit_post) ? "Update" : "Post" ?>">
     </form>
   </div>
   <script src="assets/js/popup.js"></script>
+  <script src="assets/js/image-uploader.js"></script>
+  <script>
+    function handleClosePostPopup() {
+      handleClosePopup();
+      <?php if (isset($edit_post)): ?>
+        setTimeout(() => {
+          window.location.href = "forum";
+        }, 200);
+      <?php endif; ?>
+    }
+  </script>
 </body>
 
 </html>

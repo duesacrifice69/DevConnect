@@ -35,7 +35,28 @@ try {
                 CONCAT(DATEDIFF(CURRENT_TIMESTAMP(),p.created_at), ' days ago')
             )
         ) 
-        AS days_posted FROM posts p 
+        AS days_posted,
+        IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 0,
+            IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
+                IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
+                    'just now',
+                    IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
+                        '1 min ago',
+                        CONCAT(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' mins ago')
+                    )
+                ),
+                IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
+                    '1 hour ago',
+                    CONCAT(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' hours ago')
+                )
+            ),
+            IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 1,
+                '1 day ago',
+                CONCAT(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at), ' days ago')
+            )
+        ) 
+        AS days_edited
+        FROM posts p 
         INNER JOIN users u ON u.id = p.author_id
         WHERE p.id = ?");
     $stmt->execute([$post_id]);
@@ -79,16 +100,25 @@ try {
                     <div class="menu">
                         <ul>
                             <?php if ($post["author"] == $_SESSION["username"]): ?>
-                                <li>Edit</li>
+                                <li onclick="handleEditPost()">Edit</li>
                             <?php endif; ?>
                             <li onclick="handleRemovePost('<?php echo htmlspecialchars($post['id']) ?>')">Remove</li>
                         </ul>
                     </div>
                 </button>
             <?php endif; ?>
-            <div><span class="author"><?php echo htmlspecialchars($post["author"]) ?></span> &bull; <?php echo $post["days_posted"] ?>
-            </div>
+
             <h2><?php echo htmlspecialchars($post["title"]) ?></h2>
+            <div style="display: flex;justify-content: space-between;">
+                <div>
+                    <span style="font-weight: 600;">Posted </span><?php echo $post["days_posted"] ?>
+                    &nbsp;&bull;&nbsp;
+                    <span style="font-weight: 600;">Edited </span><?php echo $post["days_edited"] ?>
+                </div>
+                <div>
+                    <span style="font-weight: 600;">By </span><a style="color:lightskyblue;text-decoration: none;" href="forum/user?username=<?php echo htmlspecialchars($post["author"]) ?>"><?php echo htmlspecialchars($post["author"]) ?></a>
+                </div>
+            </div>
             <?php if (!empty($post["tags"])): ?>
                 <div class="tags">
                     <?php foreach (explode(',', $post["tags"]) as $_tag): ?>
@@ -98,7 +128,7 @@ try {
             <?php endif; ?>
             <div style="display: flex;justify-content: space-between;">
             </div>
-            <img class="image" alt="image" src="resource.php?path=<?php echo htmlspecialchars($post["image_path"]) ?>" />
+            <img class="image" alt="image" src="resource.php?path=<?php echo $post["image_path"] ?>" />
             <div>
                 <p class="description"><?php echo htmlspecialchars($post["description"]) ?></p>
             </div>
@@ -119,6 +149,10 @@ try {
                         }).then(location.reload());
                     }
                 })
+            }
+
+            function handleEditPost() {
+                window.location.href = "<?php echo "forum/index.php?edit=" . $post['id'] ?> ";
             }
         </script>
     <?php endif; ?>
