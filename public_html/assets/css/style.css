@@ -279,13 +279,10 @@ input[type="submit"] {
     opacity: 0.9;
 }
 
-.post .author {
-    font-weight: 600;
-}
 
 .post h2 {
     font-size: 24px;
-    margin-block: 10px;
+    margin: 10px 0 20px;
 }
 
 .post h2 a {
@@ -311,7 +308,6 @@ input[type="submit"] {
     object-fit: cover;
     border-radius: 10px;
     margin-top: 10px;
-    background: white;
 }
 
 .post.full-view img {
@@ -343,7 +339,6 @@ input[type="submit"] {
     font-size: 16px;
     margin: 10px 20px;
 }
-
 
 
 /* Notes */
@@ -512,13 +507,16 @@ button.more:focus .menu {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    overflow-y: scroll;
+    padding: 20px;
 }
 
+/* Popup */
 .popup form {
     position: relative;
     background: var(--primary);
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
-    animation: slideIn 0.3s forwards;
+    animation: slideIn 0.3s forwards ease-in-out;
 }
 
 .popup form h2 {
@@ -548,7 +546,7 @@ button.more:focus .menu {
 }
 
 .popup .closed {
-    animation: slideOut 0.3s forwards;
+    animation: slideOut 0.3s forwards ease-in-out;
 }
 
 @keyframes slideIn {
@@ -574,4 +572,22 @@ button.more:focus .menu {
         opacity: 0;
     }
 
+}
+
+/* Scroll Bar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-dark);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary);
 }
