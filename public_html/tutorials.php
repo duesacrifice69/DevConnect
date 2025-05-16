@@ -6,7 +6,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-require_once "../db.php";
+require_once "../config/db.php";
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'GET':
@@ -14,7 +14,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         try {
             $stmt = $db->prepare("SELECT id, category, url FROM tutorials");
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll();
 
             foreach ($result as $row) {
                 $category = $row['category'];

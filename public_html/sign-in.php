@@ -6,7 +6,7 @@ if (isset($_SESSION["username"])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require_once "../db.php";
+    require_once "../config/db.php";
 
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $stmt = $db->prepare("SELECT username, role, id, password FROM users WHERE username = ?");
         $stmt->execute([$username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];

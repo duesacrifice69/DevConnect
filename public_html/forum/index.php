@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
   exit();
 }
 
-require_once "../../db.php";
+require_once "../../config/db.php";
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
@@ -18,7 +18,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       try {
         $stmt = $db->prepare("SELECT id, title, description, tags, image_path, author_id FROM posts WHERE id = ?");
         $stmt->execute([$edit_post_id]);
-        $edit_post = $stmt->fetch(PDO::FETCH_ASSOC);
+        $edit_post = $stmt->fetch();
         if (!$edit_post) {
           throw new Exception("Post not found.");
         }
@@ -61,7 +61,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       INNER JOIN users u ON u.id = p.author_id" . (!empty($tag) ? " WHERE tags LIKE ?" : "") . "
       ORDER BY created_at DESC");
       $stmt->execute(!empty($tag) ? ["%$tag%"] : null);
-      $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $posts = $stmt->fetchAll();
 
       if (empty($tag)) {
         // Get all unique tags from posts
@@ -94,7 +94,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       if (!empty($id)) {
         $stmt = $db->prepare("SELECT image_path, author_id FROM posts WHERE id = ?");
         $stmt->execute([$id]);
-        $_post = $stmt->fetch(PDO::FETCH_ASSOC);
+        $_post = $stmt->fetch();
         if (!$_post) {
           throw new Exception("Post not found.");
         }
@@ -204,7 +204,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
       $stmt = $db->prepare("SELECT image_path, username as author FROM posts p INNER JOIN users u ON u.id = p.author_id  WHERE p.id = ?");
       $stmt->execute([$post_id]);
-      $_post = $stmt->fetch(PDO::FETCH_ASSOC);
+      $_post = $stmt->fetch();
       if (!$_post) {
         throw new Exception("Post not found.");
       }

@@ -6,7 +6,7 @@ if (!isset($_SESSION["username"])) {
     exit();
 }
 
-require_once "../../db.php";
+require_once "../../config/db.php";
 $post_id = $_GET['id'];
 
 if (!isset($post_id)) {
@@ -63,7 +63,7 @@ try {
         INNER JOIN users u ON u.id = p.author_id
         WHERE p.id = ?");
     $stmt->execute([$post_id]);
-    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+    $post = $stmt->fetch();
 
     if (!$post) {
         header("Location: ./");

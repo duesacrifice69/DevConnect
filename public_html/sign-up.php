@@ -6,7 +6,7 @@ if (isset($_SESSION["username"])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require_once "../db.php";
+    require_once "../config/db.php";
 
     $email = $_POST['email'];
     $username = $_POST['username'];
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $stmt = $db->prepare("SELECT (SELECT COUNT(*) FROM users WHERE username = ?) as username_count, (SELECT COUNT(*) FROM users WHERE email = ?) as email_count");
         $stmt->execute([$username, $email]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch();
 
         if ($result["email_count"] > 0) {
             throw new Exception('Email already taken.');

@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
   header("Location: ./");
   exit();
 }
-require_once "../db.php";
+require_once "../config/db.php";
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
@@ -17,7 +17,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     try {
       $stmt = $db->prepare("SELECT * FROM lecture_materials ORDER BY uploaded_at DESC");
       $stmt->execute();
-      $lecture_materials = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $lecture_materials = $stmt->fetchAll();
     } catch (PDOException $e) {
       $toast = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
     }
