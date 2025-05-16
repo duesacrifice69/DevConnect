@@ -36,25 +36,28 @@ try {
             )
         ) 
         AS days_posted,
-        IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 0,
-            IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
-                IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
-                    'just now',
-                    IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
-                        '1 min ago',
-                        CONCAT(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' mins ago')
+        IF(p.created_at = p.updated_at,
+            NULL,
+            IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 0,
+                IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
+                    IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 0,
+                        'just now',
+                        IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
+                            '1 min ago',
+                            CONCAT(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' mins ago')
+                        )
+                    ),
+                    IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
+                        '1 hour ago',
+                        CONCAT(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' hours ago')
                     )
                 ),
-                IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)) = 1,
-                    '1 hour ago',
-                    CONCAT(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.updated_at)), ' hours ago')
+                IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 1,
+                    '1 day ago',
+                    CONCAT(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at), ' days ago')
                 )
-            ),
-            IF(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at) = 1,
-                '1 day ago',
-                CONCAT(DATEDIFF(CURRENT_TIMESTAMP(),p.updated_at), ' days ago')
             )
-        ) 
+        )
         AS days_edited
         FROM posts p 
         INNER JOIN users u ON u.id = p.author_id
@@ -112,8 +115,10 @@ try {
             <div style="display: flex;justify-content: space-between;">
                 <div>
                     <span style="font-weight: 600;">Posted </span><?php echo $post["days_posted"] ?>
-                    &nbsp;&bull;&nbsp;
-                    <span style="font-weight: 600;">Edited </span><?php echo $post["days_edited"] ?>
+                    <?php if (isset($post["days_edited"])): ?>
+                        &nbsp;&bull;&nbsp;
+                        <span style="font-weight: 600;">Edited </span><?php echo $post["days_edited"] ?>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <span style="font-weight: 600;">By </span><a style="color:lightskyblue;text-decoration: none;" href="forum/user?username=<?php echo htmlspecialchars($post["author"]) ?>"><?php echo htmlspecialchars($post["author"]) ?></a>
