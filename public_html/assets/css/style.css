@@ -141,12 +141,6 @@ header .admin-toggle-btn {
     border-radius: 20px;
 }
 
-header .notification-btn {
-    padding: 5px;
-    border-radius: 50%;
-    vertical-align: middle;
-}
-
 header .logout-btn {
     padding: 5px;
     border-radius: 50%;

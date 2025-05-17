@@ -31,9 +31,6 @@ $adminModeEnabled = $isAdmin ? $_SESSION["admin_mode"] : false;
                 }
             </script>
         <?php endif; ?>
-        <div class="notification-btn hover-accent">
-            <span>🔔</span>
-        </div>
         <a href="sign-out.php" class="logout-btn hover-accent"><img src="assets/images/logout.svg" alt="logout"></a>
     </div>
 </header>
