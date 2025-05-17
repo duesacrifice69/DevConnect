@@ -1,7 +1,5 @@
 <?php
-
-$upload_dir = "../uploads/lecture-materials/";
-$max_size_mb = 10;
+$max_file_size = 10 * 1024 * 1024; // 10 MB
 
 session_start();
 if (!isset($_SESSION["username"])) {
@@ -10,12 +8,15 @@ if (!isset($_SESSION["username"])) {
   exit();
 }
 require_once "../config/db.php";
+require_once "../config/cloudinary.php";
+
+use Cloudinary\Api\Upload\UploadApi;
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
     $lecture_materials = [];
     try {
-      $stmt = $db->prepare("SELECT * FROM lecture_materials ORDER BY uploaded_at DESC");
+      $stmt = $db->prepare("SELECT * FROM resources INNER JOIN lecture_materials lm ON resources.id = lm.resource_id ORDER BY uploaded_at DESC");
       $stmt->execute();
       $lecture_materials = $stmt->fetchAll();
     } catch (PDOException $e) {
@@ -30,34 +31,33 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         throw new Exception("You do not have permission to perform this action.");
       }
 
-      $file_error = $_FILES['lecture_material']['error'];
-      if ($file_error === UPLOAD_ERR_NO_FILE) {
+      $file = $_FILES['lecture_material'];
+      if ($file['error'] === UPLOAD_ERR_NO_FILE) {
         throw new Exception("No file uploaded.");
       }
-
-      $file_name = $_FILES['lecture_material']['name'];
-      $file_tmp = $_FILES['lecture_material']['tmp_name'];
-      $file_size = $_FILES['lecture_material']['size'];
-
-      if (file_exists($upload_dir . $file_name)) {
-        $file_name = pathinfo($file_name, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($file_name, PATHINFO_EXTENSION);
+      if ($file['size'] > $max_file_size) {
+        throw new Exception("File size exceeds the maximum limit of 10 MB.");
       }
+      
+      $result = (new UploadApi())->upload($file['tmp_name'], [
+        'asset_folder' => 'DevConnect/LectureMaterials',
+        'resource_type' => 'auto',
+        'use_asset_folder_as_public_id_prefix' => true,
+        'display_name' => $file['name'],
+      ]);
 
-      if ($file_size > $max_size_mb * 1024 * 1024) {
-        throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
+      $stmt = $db->prepare("INSERT INTO resources (public_id, name, url) VALUES (?, ?, ?)");
+      $stmt->execute([
+        $result["public_id"],
+        $file['name'],
+        $result["secure_url"]
+      ]);
+      $file_id = $db->lastInsertId();
+      if (!($file_id > 0)) {
+        throw new Exception("Failed to add resource.");
       }
-
-      if ($file_error !== UPLOAD_ERR_OK) {
-        throw new Exception("There was a problem uploading your file.");
-      }
-
-      $file_destination = $upload_dir . $file_name;
-
-      if (!move_uploaded_file($file_tmp, $file_destination)) {
-        throw new Exception("Failed to move uploaded file.");
-      }
-      $stmt = $db->prepare("INSERT INTO lecture_materials (file_name) VALUES (?)");
-      $success = $stmt->execute([$file_name]);
+      $stmt = $db->prepare("INSERT INTO lecture_materials VALUES (?)");
+      $success = $stmt->execute([$file_id]);
       if (!$success) {
         throw new Exception("Failed to add lecture material.");
       }
@@ -78,14 +78,25 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       if (!isset($_SESSION["admin_mode"]) || $_SESSION["admin_mode"] === false) {
         throw new Exception("You do not have permission to perform this action.");
       }
-      $file_name = $_GET['file_name'];
-      if (empty($file_name)) {
+      $id = $_GET['id'];
+      if (empty($id) || !is_numeric($id)) {
         throw new Exception("Invalid parameters.");
       }
-      $file_path = $upload_dir . $file_name;
-      unlink($file_path);
-      $stmt = $db->prepare("DELETE FROM lecture_materials WHERE file_name = ?");
-      $success = $stmt->execute([$file_name]);
+      $stmt = $db->prepare("SELECT public_id FROM resources WHERE id = ?");
+      $stmt->execute([$id]);
+      $resource = $stmt->fetch();
+      if (!$resource) {
+        throw new Exception("Resource not found.");
+      }
+      $result = (new UploadApi())->destroy($resource["public_id"], [
+        'invalidate' => true
+      ]);
+      echo json_encode($result["result"]);
+      if ($result["result"] != "ok") {
+        throw new Exception("Failed to remove resource.");
+      }
+      $stmt = $db->prepare("DELETE FROM resources WHERE id = ?");
+      $success = $stmt->execute([$id]);
       if (!$success) {
         throw new Exception("Failed to remove lecture material.");
       }
@@ -131,11 +142,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     <ul class="lecture_materials-list">
       <?php foreach ($lecture_materials as $lecture_material) : ?>
         <li class="lecture_material">
-          <?php echo htmlspecialchars($lecture_material['file_name']); ?>
+          <?php echo htmlspecialchars($lecture_material['name']); ?>
           <?php if ($adminModeEnabled): ?>
-            <div onclick="handleRemoveLectureMaterial('<?php echo $lecture_material['file_name']; ?>')">Remove</div>
+            <div onclick="handleRemoveLectureMaterial('<?php echo $lecture_material['id']; ?>')">Remove</div>
           <?php else: ?>
-            <a href="resource.php?path=lecture-materials/<?php echo urlencode(htmlspecialchars($lecture_material['file_name'])); ?>" download><img src="assets/images/download.svg" alt="download"></a>
+            <a href="<?php echo "resource.php?id=" . $lecture_material['id']; ?>" download><img src="assets/images/download.svg" alt="download"></a>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
@@ -161,10 +172,10 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
     <script src="assets/js/popup.js"></script>
     <script>
-      function handleRemoveLectureMaterial(file_name) {
+      function handleRemoveLectureMaterial(id) {
         showConfirm("Are you sure you want to remove this lecture material?", (success) => {
           if (success) {
-            fetch("lecture-materials.php?file_name=" + file_name, {
+            fetch("lecture-materials.php?id=" + id, {
               method: 'DELETE'
             }).then(() => location.reload());
           }

@@ -1,6 +1,5 @@
 <?php
-$upload_dir = "../../uploads/";
-$max_size_mb = 10;
+$max_file_size = 10 * 1024 * 1024; // 10 MB
 
 session_start();
 if (!isset($_SESSION["username"])) {
@@ -10,13 +9,17 @@ if (!isset($_SESSION["username"])) {
 }
 
 require_once "../../config/db.php";
+require_once "../../config/cloudinary.php";
+
+use Cloudinary\Api\Upload\UploadApi;
+
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case 'GET':
     $edit_post_id = isset($_GET['edit']) ? $_GET['edit'] : null;
     if (!empty($edit_post_id)) {
       try {
-        $stmt = $db->prepare("SELECT id, title, description, tags, image_path, author_id FROM posts WHERE id = ?");
+        $stmt = $db->prepare("SELECT id, title, description, tags, image_id, author_id FROM posts WHERE id = ?");
         $stmt->execute([$edit_post_id]);
         $edit_post = $stmt->fetch();
         if (!$edit_post) {
@@ -37,7 +40,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     $tags = [];
 
     try {
-      $stmt = $db->prepare("SELECT p.id, title, description, tags, image_path, username as author, 
+      $stmt = $db->prepare("SELECT p.id, title, description, tags, image_id, username as author, 
       IF(DATEDIFF(CURRENT_TIMESTAMP(),p.created_at) = 0,
         IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.created_at)) = 0,
           IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.created_at)) = 0,
@@ -92,7 +95,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       $image_missing = $image['error'] == UPLOAD_ERR_NO_FILE;
 
       if (!empty($id)) {
-        $stmt = $db->prepare("SELECT image_path, author_id FROM posts WHERE id = ?");
+        $stmt = $db->prepare("SELECT public_id, author_id FROM posts p INNER JOIN resources r ON r.id = p.image_id WHERE p.id = ?");
         $stmt->execute([$id]);
         $_post = $stmt->fetch();
         if (!$_post) {
@@ -106,84 +109,46 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       if (empty($title) || empty($description) || ($image_missing && empty($id))) {
         throw new Exception("Please fill in required fields.");
       }
+
       if (!$image_missing) {
-        $file_name = uniqid() . "_" . basename($image['name']);
-
-        if ($image['size'] > $max_size_mb * 1024 * 1024) {
-          throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
+        if ($image['size'] > $max_file_size) {
+          throw new Exception("File size exceeds the maximum limit of 10 MB.");
         }
+        $result = (new UploadApi())->upload($image['tmp_name'], [
+          'asset_folder' => 'DevConnect/Posts',
+          'use_asset_folder_as_public_id_prefix' => $_post["public_id"] ? false : true,
+          'public_id' => $_post["public_id"] ?? null,
+          'overwrite' => true,
+          'display_name' => $image['name'],
+        ]);
 
-        if ($image['error'] !== UPLOAD_ERR_OK) {
-          throw new Exception("There was a problem uploading your image.");
+        $query = "INSERT INTO resources (public_id, name, url) VALUES (:public_id, :name, :url) ON DUPLICATE KEY UPDATE name = :name, url = :url";
+        $stmt = $db->prepare($query);
+        $success = $stmt->execute([
+          ':public_id' => $result["public_id"],
+          ':name' => $result['display_name'],
+          ':url' => $result["secure_url"]
+        ]);
+        if (!$success) {
+          throw new Exception("Failed to create resource.");
         }
-
-        $file_destination = $upload_dir . "posts/" . $file_name;
-
-        if (!move_uploaded_file($image['tmp_name'], $file_destination)) {
-          throw new Exception("Failed to move uploaded image.");
-        }
-        unlink($upload_dir . $_post["image_path"]);
+        $image_id = $db->lastInsertId();
       }
 
-      $query = $id ? "UPDATE posts SET title = ?, description = ?, tags = ?, image_path= ? WHERE id = ?" : "INSERT INTO posts (title, description, tags, image_path, author_id) VALUES (?,?, ?, ?, ?)";
+      $query = "INSERT INTO posts (id, title, description, tags, image_id, author_id) VALUES (:id, :title, :description, :tags, :image_id, :author_id) ON DUPLICATE KEY UPDATE title = :title, description = :description, tags = :tags";
       $stmt = $db->prepare($query);
       $success = $stmt->execute([
-        $title,
-        $description,
-        $tags,
-        $image_missing ? $_post["image_path"] : "posts/" . $file_name,
-        $id ? $id : $_SESSION["user_id"]
+        ':id' => $id,
+        ':title' => $title,
+        ':description' => $description,
+        ':tags' => $tags,
+        ':image_id' => $image_id ?? 0,
+        ':author_id' => $_SESSION["user_id"]
       ]);
       if (!$success) {
         throw new Exception("Failed to " . ($id ? "edit" : "create") . " post.");
       }
       $_SESSION["toast"] = ['type' => 'success', 'message' => 'Post ' . ($id ? "edited" : "created") . ' successfully.'];
-    } catch (Exception $e) {
-      $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
-      http_response_code(500);
-    } finally {
-      header("Location: ./");
-      exit();
-    }
-
-    break;
-
-    try {
-      $title = $_POST['title'];
-      $description = $_POST['description'];
-      $tags = $_POST['tags'];
-      $image = $_FILES['image'];
-      if (empty($title) || empty($description) || $image['error'] == UPLOAD_ERR_NO_FILE) {
-        throw new Exception("Please fill in required fields.");
-      }
-
-      $file_name = uniqid() . "_" . basename($image['name']);
-
-      if ($image['size'] > $max_size_mb * 1024 * 1024) {
-        throw new Exception("Maximum file size is " . $max_size_mb . " MB.");
-      }
-
-      if ($image['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception("There was a problem uploading your image.");
-      }
-
-      $file_destination = $upload_dir . "posts/" . $file_name;
-
-      if (!move_uploaded_file($image['tmp_name'], $file_destination)) {
-        throw new Exception("Failed to move uploaded image.");
-      }
-      $stmt = $db->prepare("INSERT INTO posts (title, description, tags, image_path, author_id) VALUES (?,?, ?, ?, ?)");
-      $success = $stmt->execute([
-        $title,
-        $description,
-        $tags,
-        "posts/" . $file_name,
-        $_SESSION["user_id"]
-      ]);
-      if (!$success) {
-        throw new Exception("Failed to create post.");
-      }
-      $_SESSION["toast"] = ['type' => 'success', 'message' => 'Post created successfully.'];
     } catch (Exception $e) {
       $_SESSION["toast"] = ['type' => 'error', 'message' =>  "Error: " . $e->getMessage()];
       http_response_code(500);
@@ -202,7 +167,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         throw new Exception("Invalid parameters.");
       }
 
-      $stmt = $db->prepare("SELECT image_path, username as author FROM posts p INNER JOIN users u ON u.id = p.author_id  WHERE p.id = ?");
+      $stmt = $db->prepare("SELECT public_id, username as author FROM posts p INNER JOIN users u ON u.id = p.author_id INNER JOIN resources r ON r.id = p.image_id WHERE p.id = ?");
       $stmt->execute([$post_id]);
       $_post = $stmt->fetch();
       if (!$_post) {
@@ -211,11 +176,15 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       if ($_post["author"] != $_SESSION["username"] && $_SESSION["admin_mode"] != true) {
         throw new Exception("You do not have permission to remove this post.");
       }
-
-      $file_path = $upload_dir . $_post["image_path"];
-      unlink($file_path);
-      $stmt = $db->prepare("DELETE FROM posts WHERE id = ?");
-      $success = $stmt->execute([$post_id]);
+      $result = (new UploadApi())->destroy($_post["public_id"], [
+        'resource_type' => 'image',
+        'invalidate' => true
+      ]);
+      if ($result["result"] != "ok") {
+        throw new Exception("Failed to remove resource.");
+      }
+      $stmt = $db->prepare("DELETE FROM resources WHERE public_id = ?");
+      $success = $stmt->execute([$_post["public_id"]]);
       if (!$success) {
         throw new Exception("Failed to remove post.");
       }
@@ -269,13 +238,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
     <?php foreach ($posts as $post): ?>
       <div class="post">
-        <div><span class="author"><?php echo htmlspecialchars($post["author"]) ?></span> &bull; <?php echo $post["days_posted"] ?>
+        <div><span style="font-weight: 600;"><?php echo htmlspecialchars($post["author"]) ?></span> &bull; <?php echo $post["days_posted"] ?>
         </div>
         <h2><a href="forum/post.php?id=<?php echo htmlspecialchars($post["id"]) ?>">
             <?php echo htmlspecialchars($post["title"]) ?>
           </a></h2>
         <div style="display: flex; align-items: flex-start;">
-          <img class="image" alt="image" src="resource.php?path=<?php echo $post["image_path"] ?>" />
+          <img class="image" loading="lazy" alt="image" src="<?php echo "resource.php?id=" . $post["image_id"] ?>" />
           <div>
             <p class="description"><?php echo htmlspecialchars($post["description"]) ?></p>
             <?php if (!empty($post["tags"])): ?>
@@ -315,7 +284,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       <input type="text" id="tags" name="tags" placeholder="Python, HTML, CSS,..." maxlength="100" value="<?php echo isset($edit_post) ? htmlspecialchars($edit_post["tags"]) : ''; ?>">
 
       <label for="image">Image:</label>
-      <div class="image-uploader" data-id="image" data-name="image" data-required="<?php echo isset($edit_post) ? "false" : "true" ?>" data-src="<?php echo isset($edit_post) ? "resource.php?path=" . $edit_post["image_path"] : null; ?>"></div>
+      <div class="image-uploader" data-id="image" data-name="image" data-required="<?php echo isset($edit_post) ? "false" : "true" ?>" data-src="<?php echo isset($edit_post) ? "resource.php?id=" . $edit_post["image_id"] : null; ?>"></div>
 
       <input type="submit" class="button" value="<?php echo isset($edit_post) ? "Update" : "Post" ?>">
     </form>

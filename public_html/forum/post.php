@@ -15,7 +15,7 @@ if (!isset($post_id)) {
 }
 
 try {
-    $stmt = $db->prepare("SELECT p.id, title, description, tags, image_path, username as author, 
+    $stmt = $db->prepare("SELECT p.id, title, description, tags, image_id, username as author, 
         IF(DATEDIFF(CURRENT_TIMESTAMP(),p.created_at) = 0,
             IF(HOUR(TIMEDIFF(CURRENT_TIMESTAMP(),p.created_at)) = 0,
                 IF(MINUTE(TIMEDIFF(CURRENT_TIMESTAMP(),p.created_at)) = 0,
@@ -133,7 +133,7 @@ try {
             <?php endif; ?>
             <div style="display: flex;justify-content: space-between;">
             </div>
-            <img class="image" alt="image" src="resource.php?path=<?php echo $post["image_path"] ?>" />
+            <img class="image" loading="lazy" alt="image" src="<?php echo "resource.php?id=" . $post["image_id"] ?>" />
             <div>
                 <p class="description"><?php echo htmlspecialchars($post["description"]) ?></p>
             </div>
