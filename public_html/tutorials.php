@@ -117,7 +117,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             <div>
                 <?php foreach ($videos as $video) : ?>
                     <div class="tutorial-wrapper">
-                        <iframe width="225" height="150" src="<?php echo htmlspecialchars($video["url"]); ?>"
+                        <iframe width="225" height="150" loading="lazy" src="<?php echo htmlspecialchars($video["url"]); ?>"
                             title="Video player" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>

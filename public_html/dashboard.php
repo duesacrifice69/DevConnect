@@ -21,7 +21,7 @@ if (!isset($_SESSION["username"])) {
     <?php include "../includes/sidebar.php"; ?>
     <div class="main-content">
         <?php include "../includes/header.php"; ?>
-        <iframe style="width: 100%;height:200px;" src="https://quotes-github-readme.vercel.app/api?type=horizontal&theme=monokai" frameborder="0" />
+        <iframe loading="lazy" style="width: 100%;height:200px;" src="https://quotes-github-readme.vercel.app/api?type=horizontal&theme=monokai" frameborder="0" />
     </div>
 </body>
 
