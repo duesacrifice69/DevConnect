@@ -269,10 +269,13 @@ input[type="submit"] {
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.post:not(.ful-view):hover {
+.post:not(.full-view):hover {
     opacity: 0.9;
 }
 
+.post.full-view {
+    padding: 20px 50px;
+}
 
 .post h2 {
     font-size: 24px;
@@ -304,13 +307,29 @@ input[type="submit"] {
     margin-top: 10px;
 }
 
-.post.full-view img {
-    width: calc(100% - 40px);
+.post.full-view>img {
+    width: 100%;
     height: auto;
-    margin: 30px 20px;
+    margin: 30px 0;
 }
 
-.post .description {
+.author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: max-content;
+    font-size: larger;
+}
+
+.author img {
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
+    margin: 0;
+}
+
+.post .description,
+.comment .description {
     white-space: pre-wrap;
 }
 
@@ -322,6 +341,10 @@ input[type="submit"] {
     overflow: hidden;
 }
 
+.post .tags {
+    justify-content: flex-end;
+}
+
 .post:not(.full-view) .tags {
     margin: 0;
     position: absolute;
@@ -329,9 +352,40 @@ input[type="submit"] {
     right: var(--post-padding);
 }
 
-.post p {
-    font-size: 16px;
+.post:not(.full-view) p {
     margin: 10px 20px;
+}
+
+/* Comments */
+.comments {
+    margin: 50px 0;
+}
+
+.comments-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.comment {
+    position: relative;
+    display: flex;
+    background: var(--accent);
+    border-radius: 20px;
+    padding: 30px 20px;
+    margin: 10px 0;
+}
+
+.comment .comment-time {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 14px;
+}
+.comment .author {
+    min-width: 200px;
 }
 
 
@@ -583,9 +637,11 @@ button.more:focus .menu {
     cursor: pointer;
     transition: opacity 0.3s ease-in-out;
 }
-.image-uploader.dragover{
+
+.image-uploader.dragover {
     border: 5px dashed var(--secondary);
 }
+
 .image-uploader.dragover img {
     opacity: 0.5;
 }
