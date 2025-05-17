@@ -576,15 +576,24 @@ button.more:focus .menu {
 
 /* Image Uploader */
 .image-uploader {
+    display: flex;
     position: relative;
+    border: 5px solid transparent;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 10px auto;
 }
 
 .image-uploader img {
     width: 100%;
-    border-radius: 20px;
-    display: block;
-    margin: 10px auto;
     cursor: pointer;
+    transition: opacity 0.3s ease-in-out;
+}
+.image-uploader.dragover{
+    border: 5px dashed var(--secondary);
+}
+.image-uploader.dragover img {
+    opacity: 0.5;
 }
 
 .image-uploader input {
