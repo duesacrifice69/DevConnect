@@ -195,9 +195,11 @@ header .hover-accent:hover {
     display: flex;
     align-items: center;
     color: inherit;
-    text-decoration: none;
+    background: inherit;
     gap: 10px;
     max-width: max-content;
+    border: none;
+    cursor: pointer;
 }
 
 .auth-back img,

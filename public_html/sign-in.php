@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <a href="./" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
+    <button onclick="window.history.back()" class="back-btn auth-back"><img src="assets/images/arrow-left.svg" alt="back"></button>
     <div class="auth-container">
         <form name="signin" method="post">
             <label for="username">Username:</label>

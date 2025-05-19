@@ -162,9 +162,9 @@ try {
     <div class="main-content">
         <?php include "../../includes/header.php"; ?>
 
-        <a href="./forum" class="back-btn"><img src="assets/images/arrow-left.svg" alt="back">
+        <button onclick="window.history.back()" class="back-btn"><img src="assets/images/arrow-left.svg" alt="back">
             <h1>Back</h1>
-        </a>
+        </button>
 
         <div class="post full-view">
             <?php if ($post["author"] == $_SESSION["username"] || $adminModeEnabled): ?>

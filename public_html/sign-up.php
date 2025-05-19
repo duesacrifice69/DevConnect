@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <a href="./" class="auth-back"><img src="assets/images/arrow-left.svg" alt="back"></a>
+    <button onclick="window.history.back()" class="back-btn auth-back"><img src="assets/images/arrow-left.svg" alt="back"></button>
     <div class="auth-container">
         <form method="post" onsubmit="return validateForm(this);">
             <label for="email">Email:</label>
