@@ -62,7 +62,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
       ) 
       AS days_posted FROM posts p 
       INNER JOIN users u ON u.id = p.author_id" . (!empty($tag) ? " WHERE tags LIKE ?" : "") . "
-      ORDER BY created_at DESC");
+      ORDER BY p.created_at DESC");
       $stmt->execute(!empty($tag) ? ["%$tag%"] : null);
       $posts = $stmt->fetchAll();
 

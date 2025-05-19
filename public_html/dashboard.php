@@ -30,7 +30,7 @@ try {
       ) 
       AS days_posted FROM posts p 
       INNER JOIN users u ON u.id = p.author_id
-      ORDER BY created_at DESC
+      ORDER BY p.created_at DESC
       LIMIT 5");
     $recent_posts = $stmt->fetchAll();
 } catch (PDOException $e) {
