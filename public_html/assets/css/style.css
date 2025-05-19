@@ -233,6 +233,9 @@ input[type="submit"] {
     margin-top: 48px;
 }
 
+.recent-posts {
+    margin-bottom: 50px;
+}
 
 /* Forum */
 .tags {
@@ -657,6 +660,39 @@ button.more:focus .menu {
     opacity: 0;
 }
 
+/* Carousel */
+
+
+.carousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    flex: 1;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+.dots .dot {
+    width: 10px;
+    height: 10px;
+    background: var(--secondary-dark);
+    border-radius: 50%;
+}
+.dots .dot.active {
+    background: var(--secondary);
+}
 
 /* Scroll Bar */
 ::-webkit-scrollbar {
