@@ -210,39 +210,43 @@ try {
             <?php endif; ?>
         </div>
 
-        <div class="comments">
+        <div class="comments" id="comments">
             <div class="comments-header">
                 <h2>Comments</h2>
                 <button class="button" onclick="handleOpenPopup()">Add</button>
             </div>
-            <?php foreach ($post["comments"] as $comment): ?>
-                <div class="comment">
-                    <div class="comment-time">
-                        <?php if (isset($comment["days_edited"])): ?>
-                            <span style="font-weight: 600;">Edited </span><?php echo $comment["days_edited"] ?>
-                        <?php else: ?>
-                            <?php echo $comment["days_posted"] ?>
+            <?php if (count($post["comments"]) > 0): ?>
+                <?php foreach ($post["comments"] as $comment): ?>
+                    <div class="comment">
+                        <div class="comment-time">
+                            <?php if (isset($comment["days_edited"])): ?>
+                                <span style="font-weight: 600;">Edited </span><?php echo $comment["days_edited"] ?>
+                            <?php else: ?>
+                                <?php echo $comment["days_posted"] ?>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($comment["author"] == $_SESSION["username"] || $adminModeEnabled): ?>
+                            <button class="more button">&vellip;
+                                <div class="menu">
+                                    <ul>
+                                        <?php if ($comment["author"] == $_SESSION["username"]): ?>
+                                            <li onclick="handleEditComment('<?php echo $comment['id'] ?>')">Edit</li>
+                                        <?php endif; ?>
+                                        <li onclick="handleRemoveComment('<?php echo $comment['id'] ?>')">Remove</li>
+                                    </ul>
+                                </div>
+                            </button>
                         <?php endif; ?>
+                        <div class="author">
+                            <img src="assets/images/user-circle.svg" alt="user">
+                            <?php echo htmlspecialchars($comment["author"]) ?>
+                        </div>
+                        <p class="description"><?php echo htmlspecialchars($comment["comment"]) ?></p>
                     </div>
-                    <?php if ($comment["author"] == $_SESSION["username"] || $adminModeEnabled): ?>
-                        <button class="more button">&vellip;
-                            <div class="menu">
-                                <ul>
-                                    <?php if ($comment["author"] == $_SESSION["username"]): ?>
-                                        <li onclick="handleEditComment('<?php echo $comment['id'] ?>')">Edit</li>
-                                    <?php endif; ?>
-                                    <li onclick="handleRemoveComment('<?php echo $comment['id'] ?>')">Remove</li>
-                                </ul>
-                            </div>
-                        </button>
-                    <?php endif; ?>
-                    <div class="author">
-                        <img src="assets/images/user-circle.svg" alt="user">
-                        <?php echo htmlspecialchars($comment["author"]) ?>
-                    </div>
-                    <p class="description"><?php echo htmlspecialchars($comment["comment"]) ?></p>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="not-found">No comments yet...</p>
+            <?php endif; ?>
         </div>
     </div>
 
