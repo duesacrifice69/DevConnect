@@ -134,7 +134,7 @@ try {
                         <?php foreach ($data["posts"] as $post) : ?>
                             <div class="post">
                                 <div><?php echo $post["days_posted"] ?></div>
-                                <h2><a href="forum/post.php?id=<?php echo htmlspecialchars($post["id"]) ?>">
+                                <h2><a href="forum/post.php?id=<?php echo htmlspecialchars($post["id"]) ?>&width=225&height=150">
                                         <?php echo htmlspecialchars($post["title"]) ?>
                                     </a></h2>
                                 <div style="display: flex; align-items: flex-start;">

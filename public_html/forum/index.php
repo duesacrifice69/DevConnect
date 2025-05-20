@@ -244,7 +244,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             <?php echo htmlspecialchars($post["title"]) ?>
           </a></h2>
         <div style="display: flex; align-items: flex-start;">
-          <img class="image" loading="lazy" alt="image" src="<?php echo "resource.php?id=" . $post["image_id"] ?>" />
+          <img class="image" loading="lazy" alt="image" src="resource.php?id=<?php echo $post["image_id"] ?>&width=225&height=150" />
           <div>
             <p class="description"><?php echo htmlspecialchars($post["description"]) ?></p>
             <?php if (!empty($post["tags"])): ?>

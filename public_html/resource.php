@@ -20,8 +20,22 @@ if (!$resource) {
     header("HTTP/1.1 404 Not Found");
     exit("Resource not found.");
 }
+$url = $resource["url"];
 
-$ch = curl_init($resource["url"]);
+// Dymamic image resizing
+if (isset($_GET['width']) && isset($_GET['height'])) {
+    $width = $_GET['width'];
+    $height = $_GET['height'];
+    if (is_numeric($width) && is_numeric($height)) {
+        $parts = explode("image/upload", $url);
+
+        if (count($parts) > 1) {
+            $url = $parts[0] . "image/upload/c_fit,w_" . $width . ",h_" . $height . $parts[1];
+        }
+    }
+}
+
+$ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_HEADER, false);
