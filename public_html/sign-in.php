@@ -12,9 +12,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     try {
-        $stmt = $db->prepare("SELECT username, role, id, password FROM users WHERE username = ?");
+        $stmt = $db->prepare("SELECT username, email, role, id, password, verified, password FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
+
+        if (!$user['verified']) {
+            $stmt = $db->prepare("SELECT COUNT(*) FROM verification_codes WHERE user_id = ? AND expires_at > NOW()");
+            $stmt->execute([$user['id']]);
+            $has_valid_code = $stmt->fetchColumn() > 0;
+
+            if (!$has_valid_code) {
+                header("Location: verification.php?id=" . $user['id'] . "&resend=true");
+                exit();
+            } else {
+                $_SESSION['toast'] = ['type' => 'error', 'message' => "Your account is not verified. Please check your email for the verification link."];
+                header("Location: verification.php?id=" . $user['id']);
+                exit();
+            }
+        }
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];
@@ -53,6 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button onclick="window.history.back()" class="back-btn auth-back"><img src="assets/images/arrow-left.svg" alt="back"></button>
     <div class="auth-container">
         <form name="signin" method="post">
+            <h1 style="margin-bottom: 24px;">Sign In</h1>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
 

@@ -25,7 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $stmt = $db->prepare("INSERT INTO users (email, username, password) VALUES (?, ?, ?)");
             $stmt->execute([$email, $username, $hashed_password]);
-            header("Location: sign-in.php");
+            $id = $db->lastInsertId();
+            header("Location: verification.php?id=" . $id);
             exit();
         }
     } catch (Exception $e) {
@@ -51,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button onclick="window.history.back()" class="back-btn auth-back"><img src="assets/images/arrow-left.svg" alt="back"></button>
     <div class="auth-container">
         <form method="post" onsubmit="return validateForm(this);">
+            <h1 style="margin-bottom: 24px;">Sign Up</h1>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
 
