@@ -256,9 +256,7 @@ try {
             <div class="close-btn" onclick="handleCloseCommentPopup()">
                 X
             </div>
-            <?php if (isset($edit_comment)): ?>
-                <input type="hidden" name="id" value="<?php echo $edit_comment["id"] ?>">
-            <?php endif; ?>
+            <input type="hidden" name="<?php echo isset($edit_comment) ? 'id' : 'post_id' ?>" value="<?php echo isset($edit_comment) ? $edit_comment["id"] : $post['id'] ?>">
             <textarea name="comment" rows="10" required><?php echo isset($edit_comment) ? htmlspecialchars($edit_comment["comment"]) : "" ?></textarea>
             <input type="submit" class="button" value="<?php echo isset($edit_comment) ? "Save" : "Add" ?>">
         </form>
