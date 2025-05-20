@@ -31,7 +31,7 @@ try {
       AS days_posted FROM posts p 
       INNER JOIN users u ON u.id = p.author_id
       ORDER BY p.created_at DESC
-      LIMIT 5");
+      LIMIT 3");
     $recent_posts = $stmt->fetchAll();
 } catch (PDOException $e) {
     $toast = ["type" => "error", "message" => "Error: " . $e->getMessage()];
