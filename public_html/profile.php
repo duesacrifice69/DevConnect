@@ -92,7 +92,6 @@ try {
     $stmt->execute([$_SESSION["user_id"]]);
     $data["profile"] = $stmt->fetch();
     $data["profile"]["created_at"] = date("F j, Y", strtotime($data["profile"]["created_at"]));
-    $data["profile"]["role"] = $data["profile"]["role"] == 1 ? "Admin" : "User";
 } catch (PDOException $e) {
     $toast = ["type" => "error", "message" => "Error: " . $e->getMessage()];
 }
@@ -120,7 +119,7 @@ try {
                 <div>
                     <p><span class="label">Username:</span> <?php echo htmlspecialchars($data["profile"]["username"]) ?></p>
                     <p><span class="label">Email:</span> <?php echo htmlspecialchars($data["profile"]["email"]) ?></p>
-                    <p><span class="label">Role:</span> <?php echo htmlspecialchars($data["profile"]["role"]) ?></p>
+                    <p style="text-transform: capitalize;"><span class="label">Role:</span> <?php echo htmlspecialchars($data["profile"]["role"]) ?></p>
                     <p><span class="label">Joined on:</span> <?php echo htmlspecialchars($data["profile"]["created_at"]) ?></p>
                 </div>
             </div>
