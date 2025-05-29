@@ -16,6 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([$username]);
         $user = $stmt->fetch();
 
+        if (!$user)
+            throw new Exception('Invalid username or password.');
+
         if (!$user['verified']) {
             $stmt = $db->prepare("SELECT COUNT(*) FROM verification_codes WHERE user_id = ? AND expires_at > NOW()");
             $stmt->execute([$user['id']]);
